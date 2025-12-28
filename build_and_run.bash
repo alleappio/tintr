@@ -3,4 +3,4 @@ cmake ..
 make
 cd ..
 cp build/compile_commands.json .
-build/colorscheme_util
+build/colorscheme_util $1
