@@ -1,20 +1,20 @@
 [
 {
   "directory": "/home/alle/DATA/progetti/colorscheme_util/build",
-  "command": "/usr/bin/c++  -I/home/alle/DATA/progetti/colorscheme_util/include -isystem /usr/include/opencv4  -o CMakeFiles/colorscheme_util.dir/src/main.cpp.o -c /home/alle/DATA/progetti/colorscheme_util/src/main.cpp",
+  "command": "/usr/bin/c++  -I/home/alle/DATA/progetti/colorscheme_util/include -isystem /usr/include/opencv4  -o CMakeFiles/tintr.dir/src/main.cpp.o -c /home/alle/DATA/progetti/colorscheme_util/src/main.cpp",
   "file": "/home/alle/DATA/progetti/colorscheme_util/src/main.cpp",
-  "output": "CMakeFiles/colorscheme_util.dir/src/main.cpp.o"
+  "output": "CMakeFiles/tintr.dir/src/main.cpp.o"
 },
 {
   "directory": "/home/alle/DATA/progetti/colorscheme_util/build",
-  "command": "/usr/bin/c++  -I/home/alle/DATA/progetti/colorscheme_util/include -isystem /usr/include/opencv4  -o CMakeFiles/colorscheme_util.dir/src/colorscheme.cpp.o -c /home/alle/DATA/progetti/colorscheme_util/src/colorscheme.cpp",
+  "command": "/usr/bin/c++  -I/home/alle/DATA/progetti/colorscheme_util/include -isystem /usr/include/opencv4  -o CMakeFiles/tintr.dir/src/colorscheme.cpp.o -c /home/alle/DATA/progetti/colorscheme_util/src/colorscheme.cpp",
   "file": "/home/alle/DATA/progetti/colorscheme_util/src/colorscheme.cpp",
-  "output": "CMakeFiles/colorscheme_util.dir/src/colorscheme.cpp.o"
+  "output": "CMakeFiles/tintr.dir/src/colorscheme.cpp.o"
 },
 {
   "directory": "/home/alle/DATA/progetti/colorscheme_util/build",
-  "command": "/usr/bin/c++  -I/home/alle/DATA/progetti/colorscheme_util/include -isystem /usr/include/opencv4  -o CMakeFiles/colorscheme_util.dir/src/formatConverter.cpp.o -c /home/alle/DATA/progetti/colorscheme_util/src/formatConverter.cpp",
+  "command": "/usr/bin/c++  -I/home/alle/DATA/progetti/colorscheme_util/include -isystem /usr/include/opencv4  -o CMakeFiles/tintr.dir/src/formatConverter.cpp.o -c /home/alle/DATA/progetti/colorscheme_util/src/formatConverter.cpp",
   "file": "/home/alle/DATA/progetti/colorscheme_util/src/formatConverter.cpp",
-  "output": "CMakeFiles/colorscheme_util.dir/src/formatConverter.cpp.o"
+  "output": "CMakeFiles/tintr.dir/src/formatConverter.cpp.o"
 }
 ]

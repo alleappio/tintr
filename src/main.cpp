@@ -6,7 +6,7 @@
 #include <cxxopts.hpp>
 
 int main(int argc, char** argv) {
-    cxxopts::Options options("colorscheme_util", "colorscheme utilities");
+    cxxopts::Options options("tintr", "colorscheme utilities");
     options.add_options()
         ("a,apply", "Apply the specified colorscheme to the input image", cxxopts::value<bool>())
         ("e,extract", "Extract the colorscheme from the input image", cxxopts::value<bool>())

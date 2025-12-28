@@ -1,4 +1,4 @@
-# colorscheme_util
+# tintr
 
 A commandline tool written in c++ that includes a mix of utilities to manage colorschemes.
 
@@ -14,7 +14,7 @@ Running the executable without specifying anything will get you this list of pos
 ```
 colorscheme utilities
 Usage:
-  colorscheme_util [OPTION...]
+  tintr [OPTION...]
 
   -a, --apply            Apply the specified colorscheme to the input image
   -e, --extract          Extract the colorscheme from the input image
@@ -30,6 +30,7 @@ Usage:
 ## Colorscheme file
 
 The colorscheme file required by the `-a` flag is simply a yaml file containing the list of colors under the `colorscheme` field
+An example is provided with gruvbox in the file colorschemes/gruvbox.yaml
 
 
 ## future development
