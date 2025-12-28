@@ -4,7 +4,6 @@
 #include <colorscheme.hpp>
 #include <formatConverter.hpp>
 
-
 int main(int argc, char** argv) {
     std::string imagePath = std::string(argv[1]);
 

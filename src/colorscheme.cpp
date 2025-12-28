@@ -1,8 +1,14 @@
 #include <colorscheme.hpp>
 #include <limits>
 
-Colorscheme::Colorscheme(){
+Colorscheme::Colorscheme(){}
 
+Colorscheme::Colorscheme(std::string filename){
+    YAML::Node config = YAML::LoadFile(filename);
+    for(unsigned int i=0; i<16; i++){
+        std::string hexColor = config["colorscheme"][i].as<std::string>();
+        this->colors[i] = FormatConverter::HEXtoRGB(hexColor);
+    }
 }
 
 Colorscheme::Colorscheme(cv::Vec3b* colorscheme){
