@@ -29,8 +29,7 @@ Usage:
 
 ## Colorscheme file
 
-The colorscheme file required by the `-a` flag is simply a yaml file containing the list of colors under the `colorscheme` field
-An example is provided with gruvbox in the file `colorschemes/gruvbox.yaml`
+The colorscheme file required by the `-a` flag is simply a yaml file containing the list of colors under the `colorscheme` field, an example is provided with gruvbox in the file `colorschemes/gruvbox.yaml`.
 
 
 ## future development
