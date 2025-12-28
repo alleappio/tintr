@@ -11,8 +11,8 @@ cv::Vec3b FormatConverter::HEXtoRGB(std::string hexColor){
     unsigned int r, g, b;
     cv::Vec3b rgbColor;
     sscanf(hexColor.c_str(), "#%02x%02x%02x", &r, &g, &b);
-    rgbColor[0] = r;
+    rgbColor[0] = b;
     rgbColor[1] = g;
-    rgbColor[2] = b;
+    rgbColor[2] = r;
     return rgbColor;
 }

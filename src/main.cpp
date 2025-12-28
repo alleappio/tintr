@@ -28,13 +28,14 @@ int main(int argc, char** argv) {
     int newWidth = 1366; 
     int newHeight = 768; 
 
-    Colorscheme onedark(colorscheme);
-    std::cout << "opening" << imagePath << std::endl;
+    Colorscheme onedark("colorschemes/tokyonight.yaml");
+    std::cout << "opening " << imagePath << std::endl;
     cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
-    //cv::cvtColor(image, image, cv::COLOR_BGR2RGB);  // Convert to RGB
-    cv::resize(image, image, cv::Size(newWidth, newHeight), cv::INTER_LINEAR);
     onedark.applyToImage(image, image);
+    cv::imwrite("output.png", image);
+    cv::resize(image, image, cv::Size(newWidth, newHeight), cv::INTER_LINEAR);
     cv::imshow(imagePath, image);
     cv::waitKey(0);
+    cv::destroyWindow(imagePath);
     return 0;
 }
