@@ -11,8 +11,11 @@ class Colorscheme {
         Colorscheme();
         Colorscheme(cv::Vec3b* colorscheme);
         Colorscheme(std::string filename);
+        Colorscheme(cv::Mat* image);
         void applyToImage(cv::Mat& inImage, cv::Mat& outImage);
         unsigned int findClosestColor(cv::Vec3b color);
         unsigned int getColorDistance(cv::Vec3b color1, cv::Vec3b color2);
+        void extractPaletteKMeans(cv::Mat image, int k);
+        cv::Vec3b* getColorscheme();  
 };
 #endif // COLORSCHEME_HPP

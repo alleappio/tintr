@@ -1,8 +1,15 @@
 #include <formatConverter.hpp>
 
 std::string FormatConverter::RGBtoHEX(cv::Vec3b rgbColor){
-    char buffer[7];
-    sprintf(buffer, "%02X%02X%02X", rgbColor[0], rgbColor[1], rgbColor[2]);
+    char buffer[8];
+    sprintf(buffer, "#%02X%02X%02X", rgbColor[0], rgbColor[1], rgbColor[2]);
+    std::string hexColor(buffer);
+    return hexColor;
+}
+
+std::string FormatConverter::BGRtoHEX(cv::Vec3b bgrColor){
+    char buffer[8];
+    sprintf(buffer, "#%02X%02X%02X", bgrColor[2], bgrColor[1], bgrColor[0]);
     std::string hexColor(buffer);
     return hexColor;
 }
