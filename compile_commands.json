@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/alle/DATA/progetti/colorscheme_util/build",
+  "command": "/usr/bin/c++    -o CMakeFiles/colorscheme_util.dir/src/main.cpp.o -c /home/alle/DATA/progetti/colorscheme_util/src/main.cpp",
+  "file": "/home/alle/DATA/progetti/colorscheme_util/src/main.cpp",
+  "output": "CMakeFiles/colorscheme_util.dir/src/main.cpp.o"
+}
+]
