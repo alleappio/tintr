@@ -3,8 +3,9 @@
 A commandline tool written in c++ that includes a mix of utilities to manage colorschemes.
 
 Current feature list:
-    - Apply a colorscheme to an image
-    - Extract a colorscheme from an image
+- Apply a colorscheme to an image
+- Extract a colorscheme from an image
+
 
 ## Usage
 
@@ -25,3 +26,11 @@ Usage:
   -h, --help             print usage
 ```
 
+
+## Colorscheme file
+
+The colorscheme file required by the `-a` flag is simply a yaml file containing the list of colors under the `colorscheme` field
+
+
+## future development
+- Right now this utility supports colorschemes only of exactly 16 colors, would be nice to be more flexible
