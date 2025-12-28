@@ -8,7 +8,8 @@ include_directories("include")
 
 add_executable(colorscheme_util
     src/main.cpp
-    src/colorscheme.cpp)
+    src/colorscheme.cpp
+    src/formatConverter.cpp)
 
 target_link_libraries(colorscheme_util PRIVATE 
     ${OpenCV_LIBS})
