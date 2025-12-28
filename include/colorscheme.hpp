@@ -1,3 +1,5 @@
+#ifndef COLORSCHEME_HPP
+#define COLORSCHEME_HPP
 #include <opencv2/opencv.hpp>
 
 class Colorscheme {
@@ -10,3 +12,4 @@ class Colorscheme {
         unsigned int findClosestColor(cv::Vec3b color);
         unsigned int getColorDistance(cv::Vec3b color1, cv::Vec3b color2);
 };
+#endif // COLORSCHEME_HPP
