@@ -4,7 +4,9 @@
 #include <colorscheme.hpp>
 
 
-int main(){
+int main(int argc, char** argv) {
+    std::string imagePath = std::string(argv[1]);
+
     cv::Vec3b colorscheme[] = {
         cv::Vec3b(26, 27, 38),      // 0: background dark (#1a1b26)
         cv::Vec3b(36, 40, 59),      // 1: background (#24283b)
@@ -27,12 +29,12 @@ int main(){
     int newHeight = 768; 
 
     Colorscheme onedark(colorscheme);
-    std::cout << "opening wallpaper2.jpg" << std::endl;
-    cv::Mat image = cv::imread("images/wallpaper2.jpg", cv::IMREAD_COLOR);
+    std::cout << "opening" << imagePath << std::endl;
+    cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
     //cv::cvtColor(image, image, cv::COLOR_BGR2RGB);  // Convert to RGB
     cv::resize(image, image, cv::Size(newWidth, newHeight), cv::INTER_LINEAR);
     onedark.applyToImage(image, image);
-    cv::imshow("images/wallpaper2.jpg", image);
+    cv::imshow(imagePath, image);
     cv::waitKey(0);
     return 0;
 }
