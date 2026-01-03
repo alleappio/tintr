@@ -12,6 +12,7 @@ int main(int argc, char** argv) {
         ("e,extract", "Extract the colorscheme from the input image", cxxopts::value<bool>())
         ("i,input", "path to the input image", cxxopts::value<std::string>())
         ("c,colorscheme", "path to the colorscheme yaml file", cxxopts::value<std::string>())
+        ("l,length", "number of colors to extract from the image", cxxopts::value<unsigned int>()->default_value("16"))
         ("o,output", "path in which the final image will be created", cxxopts::value<std::string>()->default_value("output.png"))
         ("s,show", "show results in a window", cxxopts::value<bool>())
         ("h,help", "print usage");
@@ -55,12 +56,12 @@ int main(int argc, char** argv) {
             exit(1);
         }
         cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
-        Colorscheme colorscheme(&image);
-        cv::Vec3b* palette = colorscheme.getColorscheme();
+        Colorscheme colorscheme(&image, config["length"].as<unsigned int>());
+        std::vector<cv::Vec3b> palette = colorscheme.getColorscheme();
         std::cout << "colorscheme:" << "\n";
         std::cout << "\t[" << "\n";
-        for(unsigned int i=0; i<16; i++){
-            std::cout << "\t\t\"" << FormatConverter::BGRtoHEX(palette[i]) << "\"," << "\n";
+        for(unsigned int i=0; i<config["length"].as<unsigned int>(); i++){
+            std::cout << "\t\t\"" << FormatConverter::BGRtoHEX(palette.at(i)) << "\"," << "\n";
         }
         std::cout << "\t]" << "\n";
         std::cout << "\n";
