@@ -4,6 +4,23 @@
 #include <colorscheme.hpp>
 #include <formatConverter.hpp>
 #include <cxxopts.hpp>
+#include <yaml-cpp/emittermanip.h>
+#include <yaml-cpp/yaml.h>
+#include <fstream>
+
+void saveColorschemeToFile(std::string filename, std::vector<cv::Vec3b> colorscheme){
+    std::ofstream fout(filename);
+    YAML::Emitter out;
+    out << YAML::BeginMap;
+    out << YAML::Key << "colorscheme";
+    out << YAML::BeginSeq;
+    for(const auto& color : colorscheme){
+        out << FormatConverter::BGRtoHEX(color);
+    }
+    out << YAML::EndSeq << YAML::EndMap;
+    fout << out.c_str();
+    fout.close();
+}
 
 int main(int argc, char** argv) {
     cxxopts::Options options("tintr", "colorscheme utilities");
@@ -13,7 +30,8 @@ int main(int argc, char** argv) {
         ("i,input", "path to the input image", cxxopts::value<std::string>())
         ("c,colorscheme", "path to the colorscheme yaml file", cxxopts::value<std::string>())
         ("l,length", "number of colors to extract from the image", cxxopts::value<unsigned int>()->default_value("16"))
-        ("o,output", "path in which the final image will be created", cxxopts::value<std::string>()->default_value("output.png"))
+        ("oi,output_image", "path in which the final image will be created", cxxopts::value<std::string>()->default_value("output.png"))
+        ("oc,output_colorscheme", "path in which the final colorscheme yaml file will be created", cxxopts::value<std::string>())
         ("s,show", "show results in a window", cxxopts::value<bool>())
         ("h,help", "print usage");
 
@@ -41,8 +59,8 @@ int main(int argc, char** argv) {
         std::cout << "opening " << imagePath << std::endl;
         cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
         colorscheme.applyToImage(image, image);
-        std::cout << "saving image in " << config["output"].as<std::string>() << std::endl;
-        cv::imwrite(config["output"].as<std::string>(), image);
+        std::cout << "saving image in " << config["output_image"].as<std::string>() << std::endl;
+        cv::imwrite(config["output_image"].as<std::string>(), image);
         if(config["show"].as<bool>()){
             cv::resize(image, image, cv::Size(newWidth, newHeight), cv::INTER_LINEAR);
             cv::imshow(imagePath, image);
@@ -58,13 +76,18 @@ int main(int argc, char** argv) {
         cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
         Colorscheme colorscheme(&image, config["length"].as<unsigned int>());
         std::vector<cv::Vec3b> palette = colorscheme.getColorscheme();
-        std::cout << "colorscheme:" << "\n";
-        std::cout << "\t[" << "\n";
-        for(unsigned int i=0; i<config["length"].as<unsigned int>(); i++){
-            std::cout << "\t\t\"" << FormatConverter::BGRtoHEX(palette.at(i)) << "\"," << "\n";
+        if(!config.count("output_colorscheme")){
+            std::cout << "colorscheme:" << "\n";
+            std::cout << "\t[" << "\n";
+            for(unsigned int i=0; i<config["length"].as<unsigned int>(); i++){
+                std::cout << "\t\t\"" << FormatConverter::BGRtoHEX(palette.at(i)) << "\"," << "\n";
+            }
+            std::cout << "\t]" << "\n";
+            std::cout << "\n";
+        } else {
+            saveColorschemeToFile(config["output_colorscheme"].as<std::string>(), palette);
         }
-        std::cout << "\t]" << "\n";
-        std::cout << "\n";
+
     }
     return 0;
 }
