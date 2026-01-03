@@ -17,8 +17,8 @@ Colorscheme::Colorscheme(std::vector<cv::Vec3b> colorscheme){
     }
 }
 
-Colorscheme::Colorscheme(cv::Mat *image) {
-    this->extractPaletteKMeans(*image, 16);
+Colorscheme::Colorscheme(cv::Mat* image, unsigned int k){
+    this->extractPaletteKMeans(*image, k);
 }
 
 void Colorscheme::applyToImage(cv::Mat &inImage, cv::Mat &outImage) {

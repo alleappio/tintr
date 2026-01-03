@@ -12,7 +12,7 @@ class Colorscheme {
         Colorscheme();
         Colorscheme(std::vector<cv::Vec3b> colorscheme);
         Colorscheme(std::string filename);
-        Colorscheme(cv::Mat* image);
+        Colorscheme(cv::Mat* image, unsigned int k);
         void applyToImage(cv::Mat& inImage, cv::Mat& outImage);
         unsigned int findClosestColor(cv::Vec3b color);
         unsigned int getColorDistance(cv::Vec3b color1, cv::Vec3b color2);
