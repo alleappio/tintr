@@ -58,10 +58,12 @@ int main(int argc, char** argv) {
         Colorscheme colorscheme(&image);
         cv::Vec3b* palette = colorscheme.getColorscheme();
         std::cout << "colorscheme:" << "\n";
+        std::cout << "\t[" << "\n";
         for(unsigned int i=0; i<16; i++){
-            std::cout << FormatConverter::BGRtoHEX(palette[i]) << "\n";
+            std::cout << "\t\t\"" << FormatConverter::BGRtoHEX(palette[i]) << "\"," << "\n";
         }
-        std::cout << std::endl;
+        std::cout << "\t]" << "\n";
+        std::cout << "\n";
     }
     return 0;
 }
