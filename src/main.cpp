@@ -73,6 +73,7 @@ int main(int argc, char** argv) {
             std::cerr << "No input image specified, exiting now" << std::endl;
             exit(1);
         }
+        std::cout << "opening image " << imagePath << std::endl;
         cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
         Colorscheme colorscheme(&image, config["length"].as<unsigned int>());
         std::vector<cv::Vec3b> palette = colorscheme.getColorscheme();
@@ -85,6 +86,7 @@ int main(int argc, char** argv) {
             std::cout << "\t]" << "\n";
             std::cout << "\n";
         } else {
+            std::cout << "saving colorscheme to file " << config["output_colorscheme"].as<std::string>() << std::endl; 
             saveColorschemeToFile(config["output_colorscheme"].as<std::string>(), palette);
         }
 
