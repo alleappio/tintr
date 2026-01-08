@@ -1,12 +1,14 @@
 #include <iostream>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/opencv.hpp>
-#include <colorscheme.hpp>
-#include <formatConverter.hpp>
 #include <cxxopts.hpp>
 #include <yaml-cpp/emittermanip.h>
 #include <yaml-cpp/yaml.h>
 #include <fstream>
+
+#include "colorscheme.hpp"
+#include "formatConverter.hpp"
+#include "effects.hpp"
 
 void saveColorschemeToFile(std::string filename, std::vector<cv::Vec3b> colorscheme){
     std::ofstream fout(filename);
@@ -26,6 +28,8 @@ int main(int argc, char** argv) {
     cxxopts::Options options("tintr", "colorscheme utilities");
     options.add_options()
         ("a,apply", "Apply the specified colorscheme to the input image", cxxopts::value<bool>())
+        ("b,blur", "Blur the input image", cxxopts::value<bool>())
+        ("ba,blur_amount", "Amount of blurness", cxxopts::value<unsigned int>()->default_value("1"))
         ("e,extract", "Extract the colorscheme from the input image", cxxopts::value<bool>())
         ("i,input", "path to the input image", cxxopts::value<std::string>())
         ("c,colorscheme", "path to the colorscheme yaml file", cxxopts::value<std::string>())
@@ -37,7 +41,7 @@ int main(int argc, char** argv) {
 
     auto config = options.parse(argc, argv);
 
-    if (config.count("help") || (!config["apply"].as<bool>() && !config["extract"].as<bool>())){
+    if (config.count("help") || (!config["apply"].as<bool>() && !config["extract"].as<bool>()) && !config["blur"].as<bool>()){
       std::cout << options.help() << std::endl;
       exit(0);
     }
@@ -68,6 +72,7 @@ int main(int argc, char** argv) {
             cv::destroyWindow(imagePath);
         }
     }
+
     if(config["extract"].as<bool>()){
         if(!config.count("input")){
             std::cerr << "No input image specified, exiting now" << std::endl;
@@ -90,6 +95,27 @@ int main(int argc, char** argv) {
             saveColorschemeToFile(config["output_colorscheme"].as<std::string>(), palette);
         }
 
+    }
+
+    if(config["blur"].as<bool>()){
+        if(!config.count("input")){
+            std::cerr << "No input image specified, exiting now" << std::endl;
+            exit(1);
+        }
+
+        std::cout << "opening image " << imagePath << std::endl;
+        cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
+        cv::Mat blurred;
+
+        Effects::blur(image, blurred, config["blur_amount"].as<unsigned int>());
+        cv::imwrite(config["output_image"].as<std::string>(), blurred);
+
+        if(config["show"].as<bool>()){
+            cv::resize(blurred, blurred, cv::Size(newWidth, newHeight), cv::INTER_LINEAR);
+            cv::imshow(imagePath, blurred);
+            cv::waitKey(0);
+            cv::destroyWindow(imagePath);
+        }
     }
     return 0;
 }

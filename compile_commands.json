@@ -16,5 +16,11 @@
   "command": "/usr/bin/c++  -I/home/alle/DATA/progetti/tintr/include -isystem /usr/include/opencv4  -o CMakeFiles/tintr.dir/src/formatConverter.cpp.o -c /home/alle/DATA/progetti/tintr/src/formatConverter.cpp",
   "file": "/home/alle/DATA/progetti/tintr/src/formatConverter.cpp",
   "output": "CMakeFiles/tintr.dir/src/formatConverter.cpp.o"
+},
+{
+  "directory": "/home/alle/DATA/progetti/tintr/build",
+  "command": "/usr/bin/c++  -I/home/alle/DATA/progetti/tintr/include -isystem /usr/include/opencv4  -o CMakeFiles/tintr.dir/src/effects.cpp.o -c /home/alle/DATA/progetti/tintr/src/effects.cpp",
+  "file": "/home/alle/DATA/progetti/tintr/src/effects.cpp",
+  "output": "CMakeFiles/tintr.dir/src/effects.cpp.o"
 }
 ]

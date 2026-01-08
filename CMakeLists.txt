@@ -11,7 +11,8 @@ include_directories("include")
 add_executable(tintr
     src/main.cpp
     src/colorscheme.cpp
-    src/formatConverter.cpp)
+    src/formatConverter.cpp
+    src/effects.cpp)
 
 target_link_libraries(tintr PRIVATE 
     ${OpenCV_LIBS}
