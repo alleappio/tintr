@@ -10,6 +10,9 @@
 #include "formatConverter.hpp"
 #include "effects.hpp"
 
+#define DOWNSCALE_WIDTH 1366
+#define DOWNSCALE_HEIGHT 768
+
 void saveColorschemeToFile(std::string filename, std::vector<cv::Vec3b> colorscheme){
     std::ofstream fout(filename);
     YAML::Emitter out;
@@ -22,6 +25,56 @@ void saveColorschemeToFile(std::string filename, std::vector<cv::Vec3b> colorsch
     out << YAML::EndSeq << YAML::EndMap;
     fout << out.c_str();
     fout.close();
+}
+
+void applyColorschemeToImage(std::string imagePath, std::string colorschemePath, std::string outputImagePath, bool showImage){
+    Colorscheme colorscheme(colorschemePath);
+    std::cout << "opening " << imagePath << std::endl;
+    cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
+    colorscheme.applyToImage(image, image);
+    std::cout << "saving image in " << outputImagePath << std::endl;
+    cv::imwrite(outputImagePath, image);
+    if(showImage){
+        cv::resize(image, image, cv::Size(DOWNSCALE_WIDTH, DOWNSCALE_HEIGHT), cv::INTER_LINEAR);
+        cv::imshow(imagePath, image);
+        cv::waitKey(0);
+        cv::destroyWindow(imagePath);
+    }
+}
+
+void extractColorschemeFromImage(std::string imagePath, unsigned int length, bool saveColorscheme, std::string outputColorschemePath){
+    std::cout << "opening image " << imagePath << std::endl;
+    cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
+    Colorscheme colorscheme(&image, length);
+    std::vector<cv::Vec3b> palette = colorscheme.getColorscheme();
+    if(!saveColorscheme){
+        std::cout << "colorscheme:" << "\n";
+        std::cout << "\t[" << "\n";
+        for(unsigned int i=0; i<length; i++){
+            std::cout << "\t\t\"" << FormatConverter::BGRtoHEX(palette.at(i)) << "\"," << "\n";
+        }
+        std::cout << "\t]" << "\n";
+        std::cout << "\n";
+    } else {
+        std::cout << "saving colorscheme to file " << outputColorschemePath << std::endl; 
+        saveColorschemeToFile(outputColorschemePath, palette);
+    }
+}
+
+void blurImage(std::string imagePath, unsigned int blurAmount, std::string outputImagePath, bool showImage){
+    std::cout << "opening image " << imagePath << std::endl;
+    cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
+    cv::Mat blurred;
+
+    Effects::blur(image, blurred, blurAmount);
+    cv::imwrite(outputImagePath, blurred);
+
+    if(showImage){
+        cv::resize(blurred, blurred, cv::Size(DOWNSCALE_WIDTH, DOWNSCALE_HEIGHT), cv::INTER_LINEAR);
+        cv::imshow(imagePath, blurred);
+        cv::waitKey(0);
+        cv::destroyWindow(imagePath);
+    }
 }
 
 int main(int argc, char** argv) {
@@ -59,18 +112,8 @@ int main(int argc, char** argv) {
             std::cerr << "No colorscheme specified, exiting now" << std::endl;
             exit(1);
         }
-        Colorscheme colorscheme(config["colorscheme"].as<std::string>());
-        std::cout << "opening " << imagePath << std::endl;
-        cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
-        colorscheme.applyToImage(image, image);
-        std::cout << "saving image in " << config["output_image"].as<std::string>() << std::endl;
-        cv::imwrite(config["output_image"].as<std::string>(), image);
-        if(config["show"].as<bool>()){
-            cv::resize(image, image, cv::Size(newWidth, newHeight), cv::INTER_LINEAR);
-            cv::imshow(imagePath, image);
-            cv::waitKey(0);
-            cv::destroyWindow(imagePath);
-        }
+
+        applyColorschemeToImage(imagePath, config["colorscheme"].as<std::string>(), config["output_image"].as<std::string>(), config["show"].as<bool>());
     }
 
     if(config["extract"].as<bool>()){
@@ -78,23 +121,11 @@ int main(int argc, char** argv) {
             std::cerr << "No input image specified, exiting now" << std::endl;
             exit(1);
         }
-        std::cout << "opening image " << imagePath << std::endl;
-        cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
-        Colorscheme colorscheme(&image, config["length"].as<unsigned int>());
-        std::vector<cv::Vec3b> palette = colorscheme.getColorscheme();
         if(!config.count("output_colorscheme")){
-            std::cout << "colorscheme:" << "\n";
-            std::cout << "\t[" << "\n";
-            for(unsigned int i=0; i<config["length"].as<unsigned int>(); i++){
-                std::cout << "\t\t\"" << FormatConverter::BGRtoHEX(palette.at(i)) << "\"," << "\n";
-            }
-            std::cout << "\t]" << "\n";
-            std::cout << "\n";
-        } else {
-            std::cout << "saving colorscheme to file " << config["output_colorscheme"].as<std::string>() << std::endl; 
-            saveColorschemeToFile(config["output_colorscheme"].as<std::string>(), palette);
+            extractColorschemeFromImage(imagePath, config["length"].as<unsigned int>(), false, std::string(""));
+        }else{
+            extractColorschemeFromImage(imagePath, config["length"].as<unsigned int>(), true, config["output_colorscheme"].as<std::string>());
         }
-
     }
 
     if(config["blur"].as<bool>()){
@@ -103,19 +134,7 @@ int main(int argc, char** argv) {
             exit(1);
         }
 
-        std::cout << "opening image " << imagePath << std::endl;
-        cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
-        cv::Mat blurred;
-
-        Effects::blur(image, blurred, config["blur_amount"].as<unsigned int>());
-        cv::imwrite(config["output_image"].as<std::string>(), blurred);
-
-        if(config["show"].as<bool>()){
-            cv::resize(blurred, blurred, cv::Size(newWidth, newHeight), cv::INTER_LINEAR);
-            cv::imshow(imagePath, blurred);
-            cv::waitKey(0);
-            cv::destroyWindow(imagePath);
-        }
+        blurImage(imagePath, config["blur_amount"].as<unsigned int>(), config["output_image"].as<std::string>(), config["show"].as<bool>());
     }
     return 0;
 }
