@@ -2,6 +2,7 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 #include <cxxopts.hpp>
+#include <sstream>
 #include <yaml-cpp/emittermanip.h>
 #include <yaml-cpp/yaml.h>
 #include <fstream>
@@ -12,6 +13,14 @@
 
 #define DOWNSCALE_WIDTH 1366
 #define DOWNSCALE_HEIGHT 768
+
+void helpPrint(cxxopts::Options options){
+    std::cout << options.help() << "\n";
+    std::cout << "currently implemented actions are:\n";
+    std::cout << "\t- apply: apply a colorscheme to the image\n";
+    std::cout << "\t- extract: extract a colorscheme from an image\n";
+    std::cout << "\t- blur: blur an image\n" << std::endl;
+}
 
 void saveColorschemeToFile(std::string filename, std::vector<cv::Vec3b> colorscheme){
     std::ofstream fout(filename);
@@ -27,24 +36,24 @@ void saveColorschemeToFile(std::string filename, std::vector<cv::Vec3b> colorsch
     fout.close();
 }
 
-void applyColorschemeToImage(std::string imagePath, std::string colorschemePath, std::string outputImagePath, bool showImage){
+void applyColorschemeToImage(std::string inputPath, std::string colorschemePath, std::string outputImagePath, bool showImage){
     Colorscheme colorscheme(colorschemePath);
-    std::cout << "opening " << imagePath << std::endl;
-    cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
+    std::cout << "opening " << inputPath << std::endl;
+    cv::Mat image = cv::imread(inputPath, cv::IMREAD_COLOR);
     colorscheme.applyToImage(image, image);
     std::cout << "saving image in " << outputImagePath << std::endl;
     cv::imwrite(outputImagePath, image);
     if(showImage){
         cv::resize(image, image, cv::Size(DOWNSCALE_WIDTH, DOWNSCALE_HEIGHT), cv::INTER_LINEAR);
-        cv::imshow(imagePath, image);
+        cv::imshow(inputPath, image);
         cv::waitKey(0);
-        cv::destroyWindow(imagePath);
+        cv::destroyWindow(inputPath);
     }
 }
 
-void extractColorschemeFromImage(std::string imagePath, unsigned int length, bool saveColorscheme, std::string outputColorschemePath){
-    std::cout << "opening image " << imagePath << std::endl;
-    cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
+void extractColorschemeFromImage(std::string inputPath, unsigned int length, bool saveColorscheme, std::string outputColorschemePath){
+    std::cout << "opening image " << inputPath << std::endl;
+    cv::Mat image = cv::imread(inputPath, cv::IMREAD_COLOR);
     Colorscheme colorscheme(&image, length);
     std::vector<cv::Vec3b> palette = colorscheme.getColorscheme();
     if(!saveColorscheme){
@@ -61,9 +70,9 @@ void extractColorschemeFromImage(std::string imagePath, unsigned int length, boo
     }
 }
 
-void blurImage(std::string imagePath, unsigned int blurAmount, std::string outputImagePath, bool showImage){
-    std::cout << "opening image " << imagePath << std::endl;
-    cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
+void blurImage(std::string inputPath, unsigned int blurAmount, std::string outputImagePath, bool showImage){
+    std::cout << "opening image " << inputPath << std::endl;
+    cv::Mat image = cv::imread(inputPath, cv::IMREAD_COLOR);
     cv::Mat blurred;
 
     Effects::blur(image, blurred, blurAmount);
@@ -71,70 +80,63 @@ void blurImage(std::string imagePath, unsigned int blurAmount, std::string outpu
 
     if(showImage){
         cv::resize(blurred, blurred, cv::Size(DOWNSCALE_WIDTH, DOWNSCALE_HEIGHT), cv::INTER_LINEAR);
-        cv::imshow(imagePath, blurred);
+        cv::imshow(inputPath, blurred);
         cv::waitKey(0);
-        cv::destroyWindow(imagePath);
+        cv::destroyWindow(inputPath);
     }
 }
 
 int main(int argc, char** argv) {
-    cxxopts::Options options("tintr", "colorscheme utilities");
+    cxxopts::Options options("tintr", "colorscheme and images utilities");
+
     options.add_options()
-        ("a,apply", "Apply the specified colorscheme to the input image", cxxopts::value<bool>())
-        ("b,blur", "Blur the input image", cxxopts::value<bool>())
+        ("action", "action to perform", cxxopts::value<std::string>())
+        ("input", "input to process", cxxopts::value<std::string>())
+        ("output", "output of the action", cxxopts::value<std::string>())
         ("ba,blur_amount", "Amount of blurness", cxxopts::value<unsigned int>()->default_value("1"))
-        ("e,extract", "Extract the colorscheme from the input image", cxxopts::value<bool>())
-        ("i,input", "path to the input image", cxxopts::value<std::string>())
-        ("c,colorscheme", "path to the colorscheme yaml file", cxxopts::value<std::string>())
+        ("c,colorscheme", "path to the colorscheme yaml file that will be applied to the image", cxxopts::value<std::string>())
         ("l,length", "number of colors to extract from the image", cxxopts::value<unsigned int>()->default_value("16"))
-        ("oi,output_image", "path in which the final image will be created", cxxopts::value<std::string>()->default_value("output.png"))
-        ("oc,output_colorscheme", "path in which the final colorscheme yaml file will be created", cxxopts::value<std::string>())
         ("s,show", "show results in a window", cxxopts::value<bool>())
         ("h,help", "print usage");
 
-    auto config = options.parse(argc, argv);
+    options.parse_positional({"action", "input", "output"});
+    std::stringstream positional_help;
+    positional_help << "<action> <input> <output>\n";
+    positional_help << "\n";
+    positional_help << "\taction: action to perform\n";
+    positional_help << "\tinput: path to the input image\n";
+    positional_help << "\toutput: path to the output file\n";
+    options.positional_help(positional_help.str());
 
-    if (config.count("help") || (!config["apply"].as<bool>() && !config["extract"].as<bool>()) && !config["blur"].as<bool>()){
-      std::cout << options.help() << std::endl;
-      exit(0);
+    auto config = options.parse(argc, argv);
+    if (config.count("action") == 0 ||
+        config.count("input") == 0 ||
+        config.count("output") == 0){
+
+        helpPrint(options);
+        exit(0);
     }
 
-    std::string imagePath = config["input"].as<std::string>();
-    int newWidth = 1366; 
-    int newHeight = 768; 
+    std::string action({config["action"].as<std::string>()});
+    std::string inputPath = config["input"].as<std::string>();
+    std::string outputPath = config["output"].as<std::string>();
 
-    if(config["apply"].as<bool>()){
-        if(!config.count("input")){
-            std::cerr << "No input image specified, exiting now" << std::endl;
-            exit(1);
-        }
+    if(action == "apply"){
         if(!config.count("colorscheme")){
             std::cerr << "No colorscheme specified, exiting now" << std::endl;
             exit(1);
         }
 
-        applyColorschemeToImage(imagePath, config["colorscheme"].as<std::string>(), config["output_image"].as<std::string>(), config["show"].as<bool>());
+        applyColorschemeToImage(inputPath, config["colorscheme"].as<std::string>(), outputPath, config["show"].as<bool>());
     }
-
-    if(config["extract"].as<bool>()){
-        if(!config.count("input")){
-            std::cerr << "No input image specified, exiting now" << std::endl;
-            exit(1);
-        }
-        if(!config.count("output_colorscheme")){
-            extractColorschemeFromImage(imagePath, config["length"].as<unsigned int>(), false, std::string(""));
-        }else{
-            extractColorschemeFromImage(imagePath, config["length"].as<unsigned int>(), true, config["output_colorscheme"].as<std::string>());
-        }
+    else if(action == "extract"){
+        extractColorschemeFromImage(inputPath, config["length"].as<unsigned int>(), true, outputPath);
     }
-
-    if(config["blur"].as<bool>()){
-        if(!config.count("input")){
-            std::cerr << "No input image specified, exiting now" << std::endl;
-            exit(1);
-        }
-
-        blurImage(imagePath, config["blur_amount"].as<unsigned int>(), config["output_image"].as<std::string>(), config["show"].as<bool>());
+    else if(action == "blur"){
+        blurImage(inputPath, config["blur_amount"].as<unsigned int>(), outputPath, config["show"].as<bool>());
+    }
+    else {
+        std::cerr << "action: " << action << "not recognized" << std::endl;
     }
     return 0;
 }
